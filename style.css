@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b6e69" />
+    <meta name="description" content="不動産証券化マスター試験のための一問一答学習アプリ" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <link rel="stylesheet" href="style.css" />
+    <title>マスター一問一答</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <button class="brand" type="button" data-page="home" aria-label="ホームへ戻る">
+          <span class="brand-mark">M</span><span>マスター一問一答</span>
+        </button>
+        <button class="icon-button" id="install-button" type="button" aria-label="ホーム画面に追加" title="ホーム画面に追加" hidden>
+          <span aria-hidden="true">⇩</span>
+        </button>
+      </header>
+
+      <main>
+        <section class="page active" id="home-page" aria-labelledby="home-title">
+          <div class="welcome">
+            <p class="eyebrow">REAL ESTATE SECURITIZATION</p>
+            <h1 id="home-title">今日の一問から。</h1>
+            <p class="muted">不動産証券化マスター試験対策</p>
+          </div>
+          <div class="study-actions" aria-label="学習を始める">
+            <button class="primary-action" type="button" data-start="random">
+              <strong>ランダムに出題</strong><span>苦手を見つける</span>
+            </button>
+            <button class="action-tile" type="button" data-start="sequential">
+              <strong>順番に出題</strong><span>基礎から確認</span>
+            </button>
+            <button class="action-tile" type="button" data-page="categories">
+              <strong>分野から選ぶ</strong><span id="category-count">0 分野</span>
+            </button>
+            <button class="action-tile amber" type="button" data-start="mistakes">
+              <strong>間違いを復習</strong><span id="mistake-count">0 問</span>
+            </button>
+          </div>
+          <section class="progress-strip" aria-labelledby="progress-title">
+            <div>
+              <p class="eyebrow" id="progress-title">LEARNING PROGRESS</p>
+              <p class="progress-value"><span id="answered-count">0</span> <small>問に取り組みました</small></p>
+            </div>
+            <div class="rate-wrap"><span id="correct-rate">--</span><small>正答率</small></div>
+          </section>
+          <div class="home-links">
+            <button type="button" data-page="past">過去問・解答解説 <span>›</span></button>
+            <button type="button" data-page="history">学習履歴 <span>›</span></button>
+            <button type="button" data-page="import">教材を読み込む <span>›</span></button>
+          </div>
+        </section>
+
+        <section class="page" id="quiz-page" aria-labelledby="quiz-title">
+          <div class="quiz-toolbar">
+            <button class="text-button" type="button" data-page="home">‹ ホーム</button>
+            <div class="quiz-mode" id="quiz-mode">ランダム出題</div>
+            <span id="quiz-position">1 / 1</span>
+          </div>
+          <div class="quiz-meta"><span class="category-badge" id="question-category"></span><span id="question-id"></span></div>
+          <article class="question-area">
+            <h1 id="quiz-title">問題を準備しています</h1>
+            <div id="question-content" class="rich-content"></div>
+          </article>
+          <section class="answer-area" id="answer-area" hidden aria-live="polite">
+            <p class="answer-label">解答</p>
+            <div id="answer-content" class="rich-content"></div>
+            <div id="explanation-block" hidden>
+              <p class="explanation-label">解説</p>
+              <div id="explanation-content" class="rich-content"></div>
+            </div>
+          </section>
+          <div class="quiz-controls" id="quiz-controls">
+            <button class="show-answer" id="show-answer" type="button">答えを見る</button>
+            <div class="judgement" id="judgement" hidden>
+              <button class="result-button incorrect" type="button" data-result="incorrect">もう一度</button>
+              <button class="result-button correct" type="button" data-result="correct">わかった</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="categories-page" aria-labelledby="categories-title">
+          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="categories-title">分野を選ぶ</h1></div>
+          <div class="category-list" id="category-list"></div>
+        </section>
+
+        <section class="page" id="history-page" aria-labelledby="history-title">
+          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="history-title">学習履歴</h1></div>
+          <section class="stats-grid" aria-label="学習の集計">
+            <div><span id="history-total">0</span><small>回答数</small></div>
+            <div><span id="history-correct">0%</span><small>正答率</small></div>
+            <div><span id="history-streak">0</span><small>連続学習日</small></div>
+          </section>
+          <section class="history-section"><h2>分野別の正答率</h2><div id="category-stats" class="stat-list"></div></section>
+          <section class="history-section"><h2>最近の学習</h2><div id="recent-history" class="stat-list"></div></section>
+          <button id="clear-history" class="danger-button" type="button">学習履歴を消去</button>
+        </section>
+
+        <section class="page" id="past-page" aria-labelledby="past-title">
+          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="past-title">過去問・解答解説</h1></div>
+          <p class="past-intro">年度を選ぶと、解答・解説冊子を別画面で開けます。</p>
+          <div class="past-list">
+            <a href="assets/past-exams/2025-answers.pdf" target="_blank" rel="noopener"><span><strong>2025年度</strong><small>解答・解説</small></span><b>↗</b></a>
+            <a href="assets/past-exams/2024-answers.pdf" target="_blank" rel="noopener"><span><strong>2024年度</strong><small>解答・解説</small></span><b>↗</b></a>
+            <a href="assets/past-exams/2023-answers.pdf" target="_blank" rel="noopener"><span><strong>2023年度</strong><small>解答・解説</small></span><b>↗</b></a>
+            <a href="assets/past-exams/2022-answers.pdf" target="_blank" rel="noopener"><span><strong>2022年度</strong><small>解答</small></span><b>↗</b></a>
+            <a href="assets/past-exams/2021-answers.pdf" target="_blank" rel="noopener"><span><strong>2021年度</strong><small>解答</small></span><b>↗</b></a>
+          </div>
+        </section>
+
+        <section class="page" id="import-page" aria-labelledby="import-title">
+          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="import-title">教材を読み込む</h1></div>
+          <div class="import-tabs" role="tablist">
+            <button type="button" class="selected" data-import-tab="docx" role="tab">Word</button>
+            <button type="button" data-import-tab="pdf" role="tab">PDF</button>
+            <button type="button" data-import-tab="json" role="tab">JSON</button>
+          </div>
+          <div class="import-panel active" id="import-docx">
+            <p>見出しを「【問題】」「【解答】」「【解説】」で区切った Word ファイルを読み込みます。画像も問題・解答内に保持されます。</p>
+            <label class="file-drop"><input id="docx-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" /><span>Word ファイルを選択</span></label>
+          </div>
+          <div class="import-panel" id="import-pdf">
+            <p>PDFの文字を取り出し、問題番号・解答・解説の記号をもとに問題候補を作ります。読み取り後に内容を確認してください。</p>
+            <label class="file-drop"><input id="pdf-input" type="file" accept="application/pdf,.pdf" /><span>PDF ファイルを選択</span></label>
+          </div>
+          <div class="import-panel" id="import-json">
+            <p>問題データをそのまま追加できます。テンプレートは下のボタンから取得できます。</p>
+            <label class="file-drop"><input id="json-input" type="file" accept="application/json,.json" /><span>JSON ファイルを選択</span></label>
+            <button class="outline-button" id="download-template" type="button">JSON テンプレートを取得</button>
+          </div>
+          <section id="import-review" class="import-review" hidden>
+            <div class="review-head"><h2>読み込み結果</h2><span id="import-result-count"></span></div>
+            <div id="import-preview" class="import-preview"></div>
+            <div class="review-controls"><button class="outline-button" id="cancel-import" type="button">取り消す</button><button class="solid-button" id="save-import" type="button">問題として追加</button></div>
+          </section>
+          <p id="import-status" class="status" aria-live="polite"></p>
+        </section>
+      </main>
+    </div>
+    <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

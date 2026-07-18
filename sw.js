@@ -1,0 +1,1 @@
+{"name":"マスター一問一答","short_name":"一問一答","start_url":"./","display":"standalone","background_color":"#f7f7f3","theme_color":"#0b6e69","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
