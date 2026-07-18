@@ -1,148 +1,22 @@
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b6e69" />
-    <meta name="description" content="不動産証券化マスター試験のための一問一答学習アプリ" />
-    <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="icon.svg" />
-    <link rel="stylesheet" href="style.css" />
-    <title>マスター一問一答</title>
-  </head>
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <button class="brand" type="button" data-page="home" aria-label="ホームへ戻る">
-          <span class="brand-mark">M</span><span>マスター一問一答</span>
-        </button>
-        <button class="icon-button" id="install-button" type="button" aria-label="ホーム画面に追加" title="ホーム画面に追加" hidden>
-          <span aria-hidden="true">⇩</span>
-        </button>
-      </header>
-
-      <main>
-        <section class="page active" id="home-page" aria-labelledby="home-title">
-          <div class="welcome">
-            <p class="eyebrow">REAL ESTATE SECURITIZATION</p>
-            <h1 id="home-title">今日の一問から。</h1>
-            <p class="muted">不動産証券化マスター試験対策</p>
-          </div>
-          <div class="study-actions" aria-label="学習を始める">
-            <button class="primary-action" type="button" data-start="random">
-              <strong>ランダムに出題</strong><span>苦手を見つける</span>
-            </button>
-            <button class="action-tile" type="button" data-start="sequential">
-              <strong>順番に出題</strong><span>基礎から確認</span>
-            </button>
-            <button class="action-tile" type="button" data-page="categories">
-              <strong>分野から選ぶ</strong><span id="category-count">0 分野</span>
-            </button>
-            <button class="action-tile amber" type="button" data-start="mistakes">
-              <strong>間違いを復習</strong><span id="mistake-count">0 問</span>
-            </button>
-          </div>
-          <section class="progress-strip" aria-labelledby="progress-title">
-            <div>
-              <p class="eyebrow" id="progress-title">LEARNING PROGRESS</p>
-              <p class="progress-value"><span id="answered-count">0</span> <small>問に取り組みました</small></p>
-            </div>
-            <div class="rate-wrap"><span id="correct-rate">--</span><small>正答率</small></div>
-          </section>
-          <div class="home-links">
-            <button type="button" data-page="past">過去問・解答解説 <span>›</span></button>
-            <button type="button" data-page="history">学習履歴 <span>›</span></button>
-            <button type="button" data-page="import">教材を読み込む <span>›</span></button>
-          </div>
-        </section>
-
-        <section class="page" id="quiz-page" aria-labelledby="quiz-title">
-          <div class="quiz-toolbar">
-            <button class="text-button" type="button" data-page="home">‹ ホーム</button>
-            <div class="quiz-mode" id="quiz-mode">ランダム出題</div>
-            <span id="quiz-position">1 / 1</span>
-          </div>
-          <div class="quiz-meta"><span class="category-badge" id="question-category"></span><span id="question-id"></span></div>
-          <article class="question-area">
-            <h1 id="quiz-title">問題を準備しています</h1>
-            <div id="question-content" class="rich-content"></div>
-          </article>
-          <section class="answer-area" id="answer-area" hidden aria-live="polite">
-            <p class="answer-label">解答</p>
-            <div id="answer-content" class="rich-content"></div>
-            <div id="explanation-block" hidden>
-              <p class="explanation-label">解説</p>
-              <div id="explanation-content" class="rich-content"></div>
-            </div>
-          </section>
-          <div class="quiz-controls" id="quiz-controls">
-            <button class="show-answer" id="show-answer" type="button">答えを見る</button>
-            <div class="judgement" id="judgement" hidden>
-              <button class="result-button incorrect" type="button" data-result="incorrect">もう一度</button>
-              <button class="result-button correct" type="button" data-result="correct">わかった</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="page" id="categories-page" aria-labelledby="categories-title">
-          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="categories-title">分野を選ぶ</h1></div>
-          <div class="category-list" id="category-list"></div>
-        </section>
-
-        <section class="page" id="history-page" aria-labelledby="history-title">
-          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="history-title">学習履歴</h1></div>
-          <section class="stats-grid" aria-label="学習の集計">
-            <div><span id="history-total">0</span><small>回答数</small></div>
-            <div><span id="history-correct">0%</span><small>正答率</small></div>
-            <div><span id="history-streak">0</span><small>連続学習日</small></div>
-          </section>
-          <section class="history-section"><h2>分野別の正答率</h2><div id="category-stats" class="stat-list"></div></section>
-          <section class="history-section"><h2>最近の学習</h2><div id="recent-history" class="stat-list"></div></section>
-          <button id="clear-history" class="danger-button" type="button">学習履歴を消去</button>
-        </section>
-
-        <section class="page" id="past-page" aria-labelledby="past-title">
-          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="past-title">過去問・解答解説</h1></div>
-          <p class="past-intro">年度を選ぶと、解答・解説冊子を別画面で開けます。</p>
-          <div class="past-list">
-            <a href="assets/past-exams/2025-answers.pdf" target="_blank" rel="noopener"><span><strong>2025年度</strong><small>解答・解説</small></span><b>↗</b></a>
-            <a href="assets/past-exams/2024-answers.pdf" target="_blank" rel="noopener"><span><strong>2024年度</strong><small>解答・解説</small></span><b>↗</b></a>
-            <a href="assets/past-exams/2023-answers.pdf" target="_blank" rel="noopener"><span><strong>2023年度</strong><small>解答・解説</small></span><b>↗</b></a>
-            <a href="assets/past-exams/2022-answers.pdf" target="_blank" rel="noopener"><span><strong>2022年度</strong><small>解答</small></span><b>↗</b></a>
-            <a href="assets/past-exams/2021-answers.pdf" target="_blank" rel="noopener"><span><strong>2021年度</strong><small>解答</small></span><b>↗</b></a>
-          </div>
-        </section>
-
-        <section class="page" id="import-page" aria-labelledby="import-title">
-          <div class="page-head"><button class="text-button" type="button" data-page="home">‹ ホーム</button><h1 id="import-title">教材を読み込む</h1></div>
-          <div class="import-tabs" role="tablist">
-            <button type="button" class="selected" data-import-tab="docx" role="tab">Word</button>
-            <button type="button" data-import-tab="pdf" role="tab">PDF</button>
-            <button type="button" data-import-tab="json" role="tab">JSON</button>
-          </div>
-          <div class="import-panel active" id="import-docx">
-            <p>見出しを「【問題】」「【解答】」「【解説】」で区切った Word ファイルを読み込みます。画像も問題・解答内に保持されます。</p>
-            <label class="file-drop"><input id="docx-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" /><span>Word ファイルを選択</span></label>
-          </div>
-          <div class="import-panel" id="import-pdf">
-            <p>PDFの文字を取り出し、問題番号・解答・解説の記号をもとに問題候補を作ります。読み取り後に内容を確認してください。</p>
-            <label class="file-drop"><input id="pdf-input" type="file" accept="application/pdf,.pdf" /><span>PDF ファイルを選択</span></label>
-          </div>
-          <div class="import-panel" id="import-json">
-            <p>問題データをそのまま追加できます。テンプレートは下のボタンから取得できます。</p>
-            <label class="file-drop"><input id="json-input" type="file" accept="application/json,.json" /><span>JSON ファイルを選択</span></label>
-            <button class="outline-button" id="download-template" type="button">JSON テンプレートを取得</button>
-          </div>
-          <section id="import-review" class="import-review" hidden>
-            <div class="review-head"><h2>読み込み結果</h2><span id="import-result-count"></span></div>
-            <div id="import-preview" class="import-preview"></div>
-            <div class="review-controls"><button class="outline-button" id="cancel-import" type="button">取り消す</button><button class="solid-button" id="save-import" type="button">問題として追加</button></div>
-          </section>
-          <p id="import-status" class="status" aria-live="polite"></p>
-        </section>
-      </main>
-    </div>
-    <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
-    <script type="module" src="app.js"></script>
-  </body>
-</html>
+:root { --ink:#172529; --muted:#617174; --paper:#f7f7f3; --line:#d9e0dc; --teal:#0b6e69; --teal-dark:#07534f; --mint:#d9eee8; --amber:#d99a2b; --coral:#bf5a53; }
+* { box-sizing:border-box; }
+body { margin:0; color:var(--ink); background:var(--paper); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.55; }
+button { color:inherit; font:inherit; cursor:pointer; }
+.app-shell { max-width:760px; min-height:100vh; margin:auto; background:#fff; }
+.topbar { height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 22px; border-bottom:1px solid var(--line); }
+.brand { border:0; background:none; display:flex; gap:10px; align-items:center; font-weight:700; padding:0; }
+.brand-mark { display:grid; place-items:center; width:28px; height:28px; border-radius:5px; background:var(--teal); color:#fff; font-family:Georgia,serif; }
+.icon-button { display:grid; place-items:center; border:1px solid var(--line); background:#fff; border-radius:5px; width:36px; height:36px; font-size:20px; }
+main { padding:28px 22px 48px; }.page { display:none; }.page.active { display:block; }
+.welcome { padding:20px 0 24px; }.eyebrow { margin:0 0 6px; color:var(--teal); font-size:11px; font-weight:800; letter-spacing:1.4px; }.welcome h1 { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:37px; line-height:1.2; }.muted { margin:7px 0 0; color:var(--muted); }
+.study-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.study-actions button { min-height:106px; text-align:left; padding:16px; border:1px solid var(--line); border-radius:7px; background:#fff; transition:transform .15s,box-shadow .15s; }.study-actions button:hover { transform:translateY(-2px); box-shadow:0 5px 13px #17252915; }.study-actions strong,.study-actions span { display:block; }.study-actions strong { font-size:17px; }.study-actions span { margin-top:5px; color:var(--muted); font-size:13px; }.primary-action { grid-column:span 2; color:#fff; background:var(--teal)!important; border-color:var(--teal)!important; }.primary-action span { color:#d7ebe8!important; }.amber { border-left:4px solid var(--amber)!important; }
+.progress-strip { margin:28px 0 18px; padding:16px 0; border-block:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }.progress-value { margin:0; font-size:22px; font-weight:700; }.progress-value small { font-size:13px; font-weight:400; color:var(--muted); }.rate-wrap { text-align:right; }.rate-wrap span { display:block; color:var(--teal); font-size:23px; font-weight:800; }.rate-wrap small { color:var(--muted); font-size:11px; }
+.home-links { border-top:1px solid var(--line); }.home-links button { width:100%; display:flex; justify-content:space-between; align-items:center; padding:17px 2px; background:none; border:0; border-bottom:1px solid var(--line); text-align:left; }.home-links span { color:var(--teal); font-size:22px; }
+.page-head { display:flex; align-items:center; gap:14px; margin-bottom:26px; }.page-head h1 { margin:0; font-size:25px; font-family:Georgia,serif; }.text-button { padding:0; border:0; background:none; color:var(--teal); font-size:14px; }
+.quiz-toolbar { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; font-size:13px; color:var(--muted); }.quiz-toolbar > :last-child { text-align:right; }.quiz-mode { font-weight:700; color:var(--ink); }.quiz-meta { display:flex; gap:10px; align-items:center; margin-top:30px; font-size:13px; color:var(--muted); }.category-badge { padding:3px 9px; border-radius:99px; color:var(--teal-dark); background:var(--mint); font-weight:700; }.question-area { min-height:270px; padding:28px 0; border-bottom:1px solid var(--line); }.question-area h1 { margin:0 0 18px; font-family:Georgia,serif; font-size:27px; line-height:1.45; }.rich-content { overflow-wrap:anywhere; }.rich-content p:first-child { margin-top:0; }.rich-content img { display:block; max-width:100%; height:auto; margin:16px 0; border:1px solid var(--line); border-radius:4px; }.rich-content table { width:100%; margin:16px 0; border-collapse:collapse; font-size:14px; }.rich-content td { padding:8px; vertical-align:top; border:1px solid var(--line); }.answer-area { padding:24px 0; border-bottom:1px solid var(--line); }.answer-label,.explanation-label { margin:0 0 8px; color:var(--teal); font-size:12px; font-weight:800; letter-spacing:1px; }.explanation-label { color:#a46d12; margin-top:22px; }.quiz-controls { padding-top:22px; }.show-answer,.solid-button { width:100%; min-height:52px; border:0; border-radius:5px; background:var(--teal); color:#fff; font-weight:700; }.judgement { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.result-button { min-height:52px; border-radius:5px; font-weight:700; }.incorrect { color:#9e3734; border:1px solid #e5bab8; background:#fff6f5; }.correct { color:#fff; border:1px solid var(--teal); background:var(--teal); }
+.category-list { border-top:1px solid var(--line); }.category-item { display:flex; align-items:center; width:100%; padding:17px 2px; border:0; border-bottom:1px solid var(--line); background:#fff; text-align:left; }.category-item span:first-child { flex:1; font-weight:700; }.category-item small { color:var(--muted); margin-right:14px; }.category-item b { color:var(--teal); font-size:20px; font-weight:400; }
+.past-intro { margin:0 0 18px; color:var(--muted); font-size:14px; }.past-list { border-top:1px solid var(--line); }.past-list a { display:flex; align-items:center; justify-content:space-between; padding:17px 2px; color:var(--ink); border-bottom:1px solid var(--line); text-decoration:none; }.past-list strong,.past-list small { display:block; }.past-list strong { font-size:17px; }.past-list small { margin-top:3px; color:var(--muted); font-size:13px; }.past-list b { color:var(--teal); font-size:19px; font-weight:400; }
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--line); border-radius:6px; }.stats-grid div { padding:16px 8px; text-align:center; border-right:1px solid var(--line); }.stats-grid div:last-child { border:0; }.stats-grid span { display:block; color:var(--teal); font-size:24px; font-weight:800; }.stats-grid small { color:var(--muted); font-size:11px; }.history-section { margin-top:32px; }.history-section h2 { margin:0 0 10px; font-size:15px; }.stat-list { border-top:1px solid var(--line); }.stat-row { display:grid; grid-template-columns:1fr auto; gap:15px; padding:12px 2px; border-bottom:1px solid var(--line); font-size:14px; }.stat-row span:last-child { color:var(--muted); text-align:right; }.danger-button { margin-top:34px; border:0; background:none; padding:8px 0; color:var(--coral); font-size:13px; }
+.import-tabs { display:flex; border-bottom:1px solid var(--line); }.import-tabs button { padding:11px 18px; border:0; border-bottom:3px solid transparent; background:none; color:var(--muted); }.import-tabs button.selected { border-color:var(--teal); color:var(--teal); font-weight:700; }.import-panel { display:none; padding:23px 0; }.import-panel.active { display:block; }.import-panel p { margin:0 0 20px; color:var(--muted); font-size:14px; }.file-drop { display:grid; place-items:center; min-height:132px; padding:18px; border:1px dashed #89a9a4; border-radius:6px; color:var(--teal); background:#fbfdfc; font-weight:700; text-align:center; }.file-drop input { position:absolute; width:1px; height:1px; opacity:0; }.outline-button { margin-top:14px; min-height:42px; padding:0 15px; border:1px solid var(--teal); border-radius:5px; background:#fff; color:var(--teal); font-weight:700; }.import-review { margin-top:4px; padding-top:22px; border-top:1px solid var(--line); }.review-head { display:flex; justify-content:space-between; align-items:center; }.review-head h2 { margin:0; font-size:17px; }.review-head span { color:var(--teal); font-weight:700; }.import-preview { max-height:260px; overflow:auto; margin-top:10px; border-block:1px solid var(--line); }.preview-item { padding:12px 0; border-bottom:1px solid var(--line); }.preview-item:last-child { border:0; }.preview-item strong,.preview-item span { display:block; }.preview-item span { color:var(--muted); font-size:13px; }.review-controls { display:grid; grid-template-columns:1fr 1.5fr; gap:10px; margin-top:16px; }.review-controls .outline-button { margin:0; }.status { min-height:24px; color:var(--teal); font-size:13px; }
+@media (min-width:761px) { body { padding:18px; background:#e9efec; }.app-shell { min-height:calc(100vh - 36px); box-shadow:0 7px 30px #17252912; }.welcome { padding-top:34px; } }
+@media (max-width:420px) { main { padding:22px 16px 38px; }.topbar { padding:0 16px; }.study-actions strong { font-size:15px; }.quiz-toolbar { font-size:12px; }.question-area h1 { font-size:24px; } }
