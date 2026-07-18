@@ -1,1 +1,5 @@
-{"name":"マスター一問一答","short_name":"一問一答","start_url":"./","display":"standalone","background_color":"#f7f7f3","theme_color":"#0b6e69","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
+const CACHE = "master-quiz-v2";
+const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./data/questions.json", "./manifest.webmanifest", "./icon.svg"];
+self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))));
+self.addEventListener("activate", event => event.waitUntil(self.clients.claim()));
+self.addEventListener("fetch", event => event.respondWith(caches.match(event.request).then(hit => hit || fetch(event.request))));
