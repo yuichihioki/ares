@@ -1,1 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="#0b6e69"/><text x="96" y="125" text-anchor="middle" fill="white" font-family="Georgia,serif" font-size="105" font-weight="bold">M</text></svg>
+# マスター過去問演習
+
+不動産証券化マスター Course1 の過去問を、年度・分野ごとに一問ずつ演習するブラウザアプリです。
+
+## 主な機能
+
+- 2025年度から2021年度までの年度選択
+- 年度内の分野選択
+- 分野ごとの順番出題・ランダム出題
+- 四肢択一の回答、正誤判定、解説表示
+- 解説画面で年度・分野・問題番号を表示
+- 不正解問題の自動記録と復習
+- ブラウザ内への学習履歴保存
+
+## GitHub Pages への更新
+
+GitHubのリポジトリ画面で、次のファイルを現在のものに置き換えてください。
+
+- `index.html`
+- `style.css`
+- `app.js`
+- `sw.js`
+- `manifest.webmanifest`
+- `data/past-exams.json`
+
+古い `data/questions.json` と `assets/past-exams` は、この版では使用しません。公開リポジトリから削除してください。
+
+教材には権利上の制限があるため、公開範囲は必ず権利者の利用条件に従ってください。
