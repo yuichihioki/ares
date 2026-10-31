@@ -1,4 +1,4 @@
-const CACHE = "past-exam-quiz-v1";
+const CACHE = "past-exam-quiz-v2";
 const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./data/past-exams.json", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))));
 self.addEventListener("activate", event => event.waitUntil(self.clients.claim()));

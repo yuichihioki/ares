@@ -1,7 +1,173 @@
-const KEYS={history:"pastExam.history",mistakes:"pastExam.mistakes"};const state={questions:[],selectedYear:null,selectedCategory:null,queue:[],index:0,answered:false,installEvent:null};const $=s=>document.querySelector(s);const pages=[...document.querySelectorAll(".page")];const saved=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}};const persist=(k,v)=>localStorage.setItem(k,JSON.stringify(v));const shuffle=l=>[...l].sort(()=>Math.random()-.5);const history=()=>saved(KEYS.history,[]);const mistakes=()=>saved(KEYS.mistakes,{});
-function showPage(n){pages.forEach(p=>p.classList.toggle("active",p.id===`${n}-page`));if(n==="home")renderHome();if(n==="years")renderYears();if(n==="categories")renderCategories();if(n==="history")renderHistory();window.scrollTo({top:0,behavior:"instant"})}function renderHome(){const r=history(),c=r.filter(x=>x.correct).length;$("#answered-count").textContent=r.length;$("#correct-rate").textContent=r.length?`${Math.round(c/r.length*100)}%`:"--";$("#mistake-count").textContent=`${Object.keys(mistakes()).length} 問`}
-function renderYears(){const y=[...new Set(state.questions.map(q=>q.year))].sort((a,b)=>b-a);$("#year-list").innerHTML=y.map(v=>`<button type="button" data-year="${v}"><span><strong>${v}年度</strong><small>${state.questions.filter(q=>q.year===v).length} 問</small></span><b>›</b></button>`).join("")}function renderCategories(){const q=state.questions.filter(x=>x.year===state.selectedYear),g=[...new Set(q.map(x=>x.category))];$("#categories-title").textContent=`${state.selectedYear}年度`;$("#category-list").innerHTML=[{name:"全分野",count:q.length},...g.map(name=>({name,count:q.filter(x=>x.category===name).length}))].map(x=>`<button class="category-item" type="button" data-category="${encodeURIComponent(x.name)}"><span>${x.name}</span><small>${x.count} 問</small><b>›</b></button>`).join("")}function renderMode(){const q=state.questions.filter(x=>x.year===state.selectedYear&&(state.selectedCategory==="全分野"||x.category===state.selectedCategory));$("#mode-summary").innerHTML=`<strong>${state.selectedYear}年度</strong><span>${state.selectedCategory} / ${q.length} 問</span>`}
-function startQuiz(mode){let q=state.questions.filter(x=>x.year===state.selectedYear&&(state.selectedCategory==="全分野"||x.category===state.selectedCategory));state.queue=mode==="random"?shuffle(q):q.sort((a,b)=>a.id.localeCompare(b.id));state.index=0;showPage("quiz");renderQuestion()}function startMistakes(){const ids=mistakes();state.queue=shuffle(state.questions.filter(q=>ids[q.id]));if(!state.queue.length)return alert("復習する問題はありません。");state.index=0;showPage("quiz");renderQuestion()}
-function renderQuestion(){const q=state.queue[state.index];if(!q){alert("このセットは完了です。おつかれさまでした。");showPage("home");return}state.answered=false;$("#quiz-position").textContent=`${state.index+1} / ${state.queue.length}`;$("#question-category").textContent=q.category;$("#question-year").textContent=`${q.year}年度 / 問題${q.number}`;$("#question-content").innerHTML=q.question;$("#options").innerHTML=q.options.map(o=>`<button class="option" type="button" data-choice="${o.key}"><b>${o.key}</b><span class="rich-content">${o.text}</span></button>`).join("");$("#result-panel").hidden=true;$("#answer-button").hidden=false;$("#answer-button").disabled=true;$("#next-button").hidden=true}function choose(b){if(state.answered)return;document.querySelectorAll(".option").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");$("#answer-button").disabled=false}function submit(){const s=$(".option.selected");if(!s)return;const q=state.queue[state.index],correct=s.dataset.choice===q.answer,m=mistakes(),r=history();r.push({id:q.id,year:q.year,category:q.category,correct,at:new Date().toISOString()});persist(KEYS.history,r.slice(-1000));if(correct)delete m[q.id];else m[q.id]=true;persist(KEYS.mistakes,m);state.answered=true;document.querySelectorAll(".option").forEach(b=>{b.disabled=true;if(b.dataset.choice===q.answer)b.classList.add("correct");if(b.dataset.choice===s.dataset.choice&&!correct)b.classList.add("incorrect")});$("#result-title").textContent=correct?"正解です":"不正解です";$("#result-title").className=`result-title ${correct?"is-correct":"is-incorrect"}`;$("#correct-answer").textContent=`正解：${q.answer}`;$("#exam-context").textContent=`${q.year}年度 / ${q.category} / 問題${q.number}`;$("#explanation-content").innerHTML=q.explanation||"解説はありません。";$("#result-panel").hidden=false;$("#answer-button").hidden=true;$("#next-button").hidden=false;$("#result-panel").scrollIntoView({behavior:"smooth",block:"start"})}
-function renderHistory(){const r=history(),c=r.filter(x=>x.correct).length;$("#history-total").textContent=r.length;$("#history-correct").textContent=r.length?`${Math.round(c/r.length*100)}%`:"--";$("#history-mistakes").textContent=Object.keys(mistakes()).length;const y=[...new Set(state.questions.map(q=>q.year))].sort((a,b)=>b-a);$("#year-stats").innerHTML=y.map(v=>{const a=r.filter(x=>x.year===v);return `<div class="stat-row"><span>${v}年度</span><span>${a.length?`${Math.round(a.filter(x=>x.correct).length/a.length*100)}%`:"--"} (${a.length}問)</span></div>`}).join("")}
-document.addEventListener("click",e=>{const p=e.target.closest("[data-page]");if(p)showPage(p.dataset.page);const y=e.target.closest("[data-year]");if(y){state.selectedYear=Number(y.dataset.year);showPage("categories")}const c=e.target.closest("[data-category]");if(c){state.selectedCategory=decodeURIComponent(c.dataset.category);showPage("mode");renderMode()}const m=e.target.closest("[data-mode]");if(m)startQuiz(m.dataset.mode);const o=e.target.closest("[data-choice]");if(o)choose(o);if(e.target.closest("[data-action]")?.dataset.action==="mistakes")startMistakes()});$("#answer-button").addEventListener("click",submit);$("#next-button").addEventListener("click",()=>{state.index++;renderQuestion();window.scrollTo({top:0,behavior:"smooth"})});$("#clear-history").addEventListener("click",()=>{if(confirm("学習履歴と復習リストを消去しますか？")){localStorage.removeItem(KEYS.history);localStorage.removeItem(KEYS.mistakes);renderHistory()}});window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();state.installEvent=e;$("#install-button").hidden=false});$("#install-button").addEventListener("click",async()=>{if(state.installEvent){state.installEvent.prompt();await state.installEvent.userChoice;state.installEvent=null;$("#install-button").hidden=true}});fetch("data/past-exams.json").then(r=>r.json()).then(q=>{state.questions=q.filter(x=>x.answer&&x.options.length===4);renderHome()}).catch(()=>alert("問題データを読み込めませんでした。"));if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js");
+const KEYS = { history: "pastExam.history", mistakes: "pastExam.mistakes" };
+const state = { questions: [], selectedYear: null, selectedCategory: null, queue: [], index: 0, answered: false, installEvent: null };
+const $ = selector => document.querySelector(selector);
+const pages = [...document.querySelectorAll(".page")];
+
+const saved = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
+const persist = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+const shuffle = list => [...list].sort(() => Math.random() - 0.5);
+const history = () => saved(KEYS.history, []);
+const mistakes = () => saved(KEYS.mistakes, {});
+
+function showPage(name) {
+  pages.forEach(page => page.classList.toggle("active", page.id === `${name}-page`));
+  if (name === "home") renderHome();
+  if (name === "years") renderYears();
+  if (name === "categories") renderCategories();
+  if (name === "history") renderHistory();
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+function renderHome() {
+  const records = history();
+  const correct = records.filter(record => record.correct).length;
+  $("#answered-count").textContent = records.length;
+  $("#correct-rate").textContent = records.length ? `${Math.round(correct / records.length * 100)}%` : "--";
+  $("#mistake-count").textContent = `${Object.keys(mistakes()).length} 問`;
+}
+
+function renderYears() {
+  const years = [...new Set(state.questions.map(question => question.year))].sort((a, b) => b - a);
+  $("#year-list").innerHTML = years.map(year => `<button type="button" data-year="${year}"><span><strong>${year}年度</strong><small>${state.questions.filter(question => question.year === year).length} 問</small></span><b>›</b></button>`).join("");
+}
+
+function renderCategories() {
+  const questions = state.questions.filter(question => question.year === state.selectedYear);
+  const categories = [...new Set(questions.map(question => question.category))];
+  $("#categories-title").textContent = `${state.selectedYear}年度`;
+  $("#category-list").innerHTML = [{ name: "全分野", count: questions.length }, ...categories.map(name => ({ name, count: questions.filter(question => question.category === name).length }))].map(category => `<button class="category-item" type="button" data-category="${encodeURIComponent(category.name)}"><span>${category.name}</span><small>${category.count} 問</small><b>›</b></button>`).join("");
+}
+
+function selectedQuestions() {
+  return state.questions.filter(question => question.year === state.selectedYear && (state.selectedCategory === "全分野" || question.category === state.selectedCategory)).sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function renderMode() {
+  const questions = selectedQuestions();
+  $("#mode-summary").innerHTML = `<strong>${state.selectedYear}年度</strong><span>${state.selectedCategory} / ${questions.length} 問</span>`;
+  $("#start-question").innerHTML = questions.map((question, index) => {
+    const prefix = state.selectedCategory === "全分野" ? `${question.category} / ` : "";
+    return `<option value="${question.id}">${prefix}問題${question.number}（${index + 1}問目）</option>`;
+  }).join("");
+}
+
+function startQuiz(mode) {
+  const questions = selectedQuestions();
+  const startIndex = Math.max(0, questions.findIndex(question => question.id === $("#start-question").value));
+  const first = questions[startIndex];
+  state.queue = mode === "random" ? [first, ...shuffle(questions.filter(question => question.id !== first.id))] : questions.slice(startIndex);
+  state.index = 0;
+  showPage("quiz");
+  renderQuestion();
+}
+
+function startMistakes() {
+  const ids = mistakes();
+  state.queue = shuffle(state.questions.filter(question => ids[question.id]));
+  if (!state.queue.length) return alert("復習する問題はありません。");
+  state.index = 0;
+  showPage("quiz");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const question = state.queue[state.index];
+  if (!question) { alert("このセットは完了です。おつかれさまでした。"); showPage("home"); return; }
+  state.answered = false;
+  $("#quiz-position").textContent = `${state.index + 1} / ${state.queue.length}`;
+  $("#question-category").textContent = question.category;
+  $("#question-year").textContent = `${question.year}年度 / 問題${question.number}`;
+  $("#question-content").innerHTML = question.question;
+  $("#options").innerHTML = question.options.map(option => `<button class="option" type="button" data-choice="${option.key}"><b>${option.key}</b><span class="rich-content">${option.text}</span></button>`).join("");
+  $("#result-panel").hidden = true;
+  $("#answer-button").hidden = false;
+  $("#answer-button").disabled = true;
+  $("#next-button").hidden = true;
+}
+
+function choose(button) {
+  if (state.answered) return;
+  document.querySelectorAll(".option").forEach(option => option.classList.remove("selected"));
+  button.classList.add("selected");
+  $("#answer-button").disabled = false;
+}
+
+function submit() {
+  const selected = $(".option.selected");
+  if (!selected) return;
+  const question = state.queue[state.index];
+  const correct = selected.dataset.choice === question.answer;
+  const review = mistakes();
+  const records = history();
+  records.push({ id: question.id, year: question.year, category: question.category, correct, at: new Date().toISOString() });
+  persist(KEYS.history, records.slice(-1000));
+  if (correct) delete review[question.id]; else review[question.id] = true;
+  persist(KEYS.mistakes, review);
+  state.answered = true;
+  document.querySelectorAll(".option").forEach(option => {
+    option.disabled = true;
+    if (option.dataset.choice === question.answer) option.classList.add("correct");
+    if (option.dataset.choice === selected.dataset.choice && !correct) option.classList.add("incorrect");
+  });
+  $("#result-title").textContent = correct ? "正解です" : "不正解です";
+  $("#result-title").className = `result-title ${correct ? "is-correct" : "is-incorrect"}`;
+  $("#correct-answer").textContent = `正解：${question.answer}`;
+  $("#exam-context").textContent = `${question.year}年度 / ${question.category} / 問題${question.number}`;
+  $("#explanation-content").innerHTML = question.explanation || "解説はありません。";
+  $("#result-panel").hidden = false;
+  $("#answer-button").hidden = true;
+  $("#next-button").hidden = false;
+  $("#result-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderHistory() {
+  const records = history();
+  const correct = records.filter(record => record.correct).length;
+  $("#history-total").textContent = records.length;
+  $("#history-correct").textContent = records.length ? `${Math.round(correct / records.length * 100)}%` : "--";
+  $("#history-mistakes").textContent = Object.keys(mistakes()).length;
+  const years = [...new Set(state.questions.map(question => question.year))].sort((a, b) => b - a);
+  $("#year-stats").innerHTML = years.map(year => {
+    const attempts = records.filter(record => record.year === year);
+    const rate = attempts.length ? `${Math.round(attempts.filter(record => record.correct).length / attempts.length * 100)}%` : "--";
+    return `<div class="stat-row"><span>${year}年度</span><span>${rate} (${attempts.length}問)</span></div>`;
+  }).join("");
+}
+
+document.addEventListener("click", event => {
+  const page = event.target.closest("[data-page]");
+  if (page) showPage(page.dataset.page);
+  const year = event.target.closest("[data-year]");
+  if (year) { state.selectedYear = Number(year.dataset.year); showPage("categories"); }
+  const category = event.target.closest("[data-category]");
+  if (category) { state.selectedCategory = decodeURIComponent(category.dataset.category); showPage("mode"); renderMode(); }
+  const mode = event.target.closest("[data-mode]");
+  if (mode) startQuiz(mode.dataset.mode);
+  const choice = event.target.closest("[data-choice]");
+  if (choice) choose(choice);
+  if (event.target.closest("[data-action]")?.dataset.action === "mistakes") startMistakes();
+});
+
+$("#answer-button").addEventListener("click", submit);
+$("#next-button").addEventListener("click", () => { state.index += 1; renderQuestion(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+$("#clear-history").addEventListener("click", () => {
+  if (confirm("学習履歴と復習リストを消去しますか？")) {
+    localStorage.removeItem(KEYS.history);
+    localStorage.removeItem(KEYS.mistakes);
+    renderHistory();
+  }
+});
+window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); state.installEvent = event; $("#install-button").hidden = false; });
+$("#install-button").addEventListener("click", async () => {
+  if (!state.installEvent) return;
+  state.installEvent.prompt();
+  await state.installEvent.userChoice;
+  state.installEvent = null;
+  $("#install-button").hidden = true;
+});
+
+fetch("data/past-exams.json?v=3").then(response => response.json()).then(questions => {
+  state.questions = questions.filter(question => question.answer && question.options.length === 4);
+  renderHome();
+}).catch(() => alert("問題データを読み込めませんでした。"));
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw-v2.js");
